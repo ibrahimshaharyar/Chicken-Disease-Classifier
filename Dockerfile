@@ -16,6 +16,7 @@ COPY app ./app
 COPY src ./src
 COPY configs ./configs
 COPY artifacts/model ./artifacts/model
+COPY data/split/test ./data/split/test
 
 # Expose the API port
 EXPOSE 8000
