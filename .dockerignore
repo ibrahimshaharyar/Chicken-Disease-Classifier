@@ -17,5 +17,7 @@ pip-delete-this-directory.txt
 dvc.lock
 debug_check.py
 tests/
-data/
-!data/split/test
+data/*
+!data/split/
+data/split/*
+!data/split/test/
