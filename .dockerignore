@@ -18,3 +18,4 @@ dvc.lock
 debug_check.py
 tests/
 data/
+!data/split/test

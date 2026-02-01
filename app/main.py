@@ -4,6 +4,12 @@ from fastapi.staticfiles import StaticFiles
 import tempfile
 from pathlib import Path
 import shutil
+import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Using the robust Predictor with built-in fallback
 from src.serving.predictor import Predictor
@@ -12,7 +18,12 @@ app = FastAPI(title="Chicken Feces Classifier API")
 
 # Mount the test data directory to serve example images
 # data/split/test should contain "Healthy" and "Coccidiosis" subfolders
-app.mount("/static", StaticFiles(directory="data/split/test"), name="static")
+static_dir = "data/split/test"
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+    logger.info(f"Mounted static directory: {static_dir}")
+else:
+    logger.warning(f"Static directory '{static_dir}' not found. Example images will not be available.")
 
 predictor = Predictor()
 
