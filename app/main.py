@@ -333,6 +333,49 @@ def root():
                 display: inline-block;
             }
             
+            /* Upload Area Styles */
+            .upload-container {
+                padding: 2rem 0;
+            }
+            
+            .upload-box {
+                border: 3px dashed var(--border);
+                border-radius: 1rem;
+                padding: 3rem 2rem;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s;
+                background-color: #f8fafc;
+            }
+            
+            .upload-box:hover {
+                border-color: var(--primary);
+                background-color: #f0f9ff;
+            }
+            
+            .upload-box.drag-over {
+                border-color: var(--primary);
+                background-color: #e0f2fe;
+                transform: scale(1.02);
+            }
+            
+            .upload-box svg {
+                color: var(--primary);
+                margin-bottom: 1rem;
+            }
+            
+            .upload-box h3 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--text-main);
+                margin-bottom: 0.5rem;
+            }
+            
+            .upload-box p {
+                font-size: 0.9rem;
+                color: var(--text-muted);
+            }
+            
         </style>
     </head>
     <body>
@@ -351,6 +394,7 @@ def root():
                 <div class="tabs">
                     <button class="tab-btn active" onclick="switchTab('cocci')">Coccidiosis Examples</button>
                     <button class="tab-btn" onclick="switchTab('healthy')">Healthy Examples</button>
+                    <button class="tab-btn" onclick="switchTab('upload')">Upload Your Own</button>
                 </div>
 
                 <div id="cocci-grid" class="image-grid">
@@ -359,6 +403,19 @@ def root():
                 
                 <div id="healthy-grid" class="image-grid" style="display: none;">
                     <!-- Images will be injected here -->
+                </div>
+                
+                <div id="upload-area" class="upload-container" style="display: none;">
+                    <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                    <div class="upload-box" id="upload-box" onclick="document.getElementById('file-input').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <h3>Click to upload or drag and drop</h3>
+                        <p>PNG, JPG, JPEG (Max 10MB)</p>
+                    </div>
                 </div>
             </div>
 
@@ -408,6 +465,7 @@ def root():
             };
 
             let selectedImage = null;
+            let uploadedFile = null;
 
             function init() {
                 const cocciGrid = document.getElementById('cocci-grid');
@@ -441,6 +499,15 @@ def root():
 
                 document.getElementById('cocci-grid').style.display = type === 'cocci' ? 'grid' : 'none';
                 document.getElementById('healthy-grid').style.display = type === 'healthy' ? 'grid' : 'none';
+                document.getElementById('upload-area').style.display = type === 'upload' ? 'block' : 'none';
+                
+                // Clear selections when switching tabs
+                if (type === 'upload') {
+                    selectedImage = null;
+                    document.querySelectorAll('.grid-item').forEach(el => el.classList.remove('selected'));
+                } else {
+                    uploadedFile = null;
+                }
             }
 
             function selectImage(src, element) {
@@ -463,20 +530,24 @@ def root():
             }
 
             async function predict() {
-                if (!selectedImage) return;
+                if (!selectedImage && !uploadedFile) return;
 
                 const btn = document.getElementById('predict-btn');
                 btn.classList.add('loading');
                 btn.disabled = true;
 
                 try {
-                    // Fetch the image as a blob
-                    const response = await fetch(`/static/${selectedImage}`);
-                    const blob = await response.blob();
-
-                    // Create form data
                     const formData = new FormData();
-                    formData.append('file', blob, selectedImage.split('/').pop());
+                    
+                    if (uploadedFile) {
+                        // Use uploaded file
+                        formData.append('file', uploadedFile, uploadedFile.name);
+                    } else {
+                        // Fetch the example image as a blob
+                        const response = await fetch(`/static/${selectedImage}`);
+                        const blob = await response.blob();
+                        formData.append('file', blob, selectedImage.split('/').pop());
+                    }
 
                     // Send to prediction API
                     const apiResponse = await fetch('/predict', {
@@ -513,8 +584,82 @@ def root():
                 container.classList.add('visible');
             }
 
+            // File upload handling
+            function handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    processUploadedFile(file);
+                }
+            }
+            
+            function processUploadedFile(file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload an image file (PNG, JPG, JPEG)');
+                    return;
+                }
+                
+                // Validate file size (10MB max)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size must be less than 10MB');
+                    return;
+                }
+                
+                uploadedFile = file;
+                
+                // Preview the uploaded image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewBox = document.getElementById('preview-box');
+                    previewBox.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
+                    
+                    // Enable predict button
+                    document.getElementById('predict-btn').disabled = false;
+                    
+                    // Reset result
+                    document.getElementById('result-display').classList.remove('visible');
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // Drag and drop handling
+            function initDragAndDrop() {
+                const uploadBox = document.getElementById('upload-box');
+                
+                if (!uploadBox) return;
+                
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadBox.addEventListener(eventName, preventDefaults, false);
+                });
+                
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadBox.addEventListener(eventName, () => {
+                        uploadBox.classList.add('drag-over');
+                    }, false);
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadBox.addEventListener(eventName, () => {
+                        uploadBox.classList.remove('drag-over');
+                    }, false);
+                });
+                
+                uploadBox.addEventListener('drop', (e) => {
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        processUploadedFile(files[0]);
+                    }
+                }, false);
+            }
+
             // Initialize on load
             init();
+            initDragAndDrop();
         </script>
     </body>
     </html>
