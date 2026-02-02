@@ -14,7 +14,7 @@ list_of_files = [
     "configs/params.yaml",
     "configs/schema.yaml",
 
-    # Data (tracked later by DVC)
+    # Data
     "data/raw/.gitkeep",
     "data/processed/.gitkeep",
     "data/split/.gitkeep",
@@ -53,7 +53,6 @@ list_of_files = [
     "tests/test_api.py",
 
     # Root files
-    "dvc.yaml",
     "requirements.txt",
     "Dockerfile",
     "README.md",

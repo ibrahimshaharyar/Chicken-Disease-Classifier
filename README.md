@@ -22,7 +22,7 @@ This project provides an end-to-end MLOps pipeline for classifying Chicken Feces
 ├── tests/              # Unit tests
 ├── Dockerfile          # Docker configuration
 ├── requirements.txt    # Python dependencies
-└── dvc.yaml            # DVC pipeline configuration
+└── requirements.txt    # Python dependencies
 ```
 
 ## Getting Started

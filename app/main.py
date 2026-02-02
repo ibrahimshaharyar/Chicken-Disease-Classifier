@@ -596,10 +596,10 @@ def root():
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                             </div>
                             <div class="insight-content">
-                                <h4>Data Versioning (DVC)</h4>
-                                <p>Large datasets and model weights are tracked using DVC, ensuring 100% reproducibility across environments.</p>
-                                <div class="tech-stack-label">DVC</div>
-                                <div class="tech-stack-label">Git</div>
+                                <h4>Data Management</h4>
+                                <p>Systematic data ingestion, validation, and splitting workflows ensuring training consistency and performance.</p>
+                                <div class="tech-stack-label">NumPy</div>
+                                <div class="tech-stack-label">Pandas</div>
                             </div>
                         </div>
 
