@@ -392,10 +392,11 @@ def root():
             // Ensure these files exist in your data/split/test directory
             const examples = {
                 cocci: [
+                    'Coccidiosis/cocci.116.jpg',
                     'Coccidiosis/cocci.134.jpg',
-                    'Coccidiosis/cocci.149.jpg',
                     'Coccidiosis/cocci.152.jpg',
-                    'Coccidiosis/cocci.163.jpg'
+                    'Coccidiosis/cocci.163.jpg',
+                    'Coccidiosis/cocci.24.jpg'
                 ],
                 healthy: [
                     'Healthy/healthy.104.jpg',
