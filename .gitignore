@@ -209,3 +209,4 @@ venv/
 artifacts/*
 !artifacts/model/
 !artifacts/model/best_model.keras
+!artifacts/metrics.json

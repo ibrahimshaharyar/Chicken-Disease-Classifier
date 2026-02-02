@@ -16,6 +16,7 @@ COPY app ./app
 COPY src ./src
 COPY configs ./configs
 COPY artifacts/model ./artifacts/model
+COPY artifacts/metrics.json ./artifacts/metrics.json
 COPY data/split/test ./data/split/test
 
 # Expose the API port
